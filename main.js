@@ -61,7 +61,6 @@ var isCollision = function(puck, paddles) {
 	for (var i = 0; i < paddles.length; i++) {
 		var current = paddles[i];
 		if (puck.x > current.x && puck.x < current.x + 10 && puck.y > current.y && puck.y < current.y + current.height) {
-			console.log('hit');
 			return true;
 		}
 	}
