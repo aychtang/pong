@@ -1,6 +1,7 @@
 var canvas = document.getElementById('pong');
 var context = canvas.getContext('2d');
 var paddles = [];
+var player = 0;
 var puck;
 canvas.height = 500;
 canvas.width = 1024;
@@ -61,15 +62,17 @@ var isCollision = function(puck, paddles) {
 	for (var i = 0; i < paddles.length; i++) {
 		var current = paddles[i];
 		if (puck.x > current.x && puck.x < current.x + 10 && puck.y > current.y && puck.y < current.y + current.height) {
-			return true;
+			return current;
 		}
 	}
 };
 
 var updatePuck = function(puck) {
-	if (isCollision(puck, paddles)) {
+	var collided = isCollision(puck, paddles);
+	if (collided) {
+		var yDiff = (puck.y - collided.y - collided.height / 2) / 100;
 		puck.vx = - puck.vx;
-		puck.vy = - puck.vy;
+		puck.vy = - puck.vy + yDiff;
 	}
 	puck.x += puck.vx;
 	puck.y += puck.vy;
@@ -85,5 +88,9 @@ var init = function() {
 	startPuck(puck, Math.random() * 1 > 0.5 ? 5: -5, 0);
 	setInterval(main, 14);
 };
+
+canvas.addEventListener('mousemove', function(e) {
+	movePaddle(paddles[player], e.y);
+});
 
 init();
