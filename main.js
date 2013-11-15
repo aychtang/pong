@@ -72,7 +72,7 @@ var updatePuck = function(puck) {
 	if (collided) {
 		var yDiff = (puck.y - collided.y - collided.height / 2) / 100;
 		puck.vx = - puck.vx;
-		puck.vy = - puck.vy + yDiff;
+		puck.vy = puck.vy + (yDiff / 2);
 	}
 	puck.x += puck.vx;
 	puck.y += puck.vy;
