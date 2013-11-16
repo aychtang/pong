@@ -58,22 +58,28 @@ var movePaddle = function(paddle, y) {
 	paddle.y = y;
 };
 
-var isCollision = function(puck, paddles) {
+var checkCollision = function(puck, paddles) {
 	for (var i = 0; i < paddles.length; i++) {
 		var current = paddles[i];
 		if (puck.x > current.x && puck.x < current.x + 10 && puck.y > current.y && puck.y < current.y + current.height) {
-			return current;
+			var yDiff = (puck.y - current.y - current.height / 2) / 100;
+			puck.vx = - puck.vx;
+			puck.vy = - puck.vy + yDiff;
+			return;
+		}
+		else if (puck.y < 0 || puck.y > canvas.height) {
+			puck.vy = - puck.vy;
+			return;
+		}
+		else if (puck.x < 0 || puck.x > canvas.width) {
+			puck.vx = - puck.vx;
+			return;
 		}
 	}
 };
 
 var updatePuck = function(puck) {
-	var collided = isCollision(puck, paddles);
-	if (collided) {
-		var yDiff = (puck.y - collided.y - collided.height / 2) / 100;
-		puck.vx = - puck.vx;
-		puck.vy = - puck.vy + yDiff;
-	}
+	checkCollision(puck, paddles);
 	puck.x += puck.vx;
 	puck.y += puck.vy;
 };
