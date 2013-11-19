@@ -1,10 +1,12 @@
 var canvas = document.getElementById('pong');
 var context = canvas.getContext('2d');
 var paddles = [];
-var player = 0;
+var player = 1;
 var puck;
 canvas.height = 500;
 canvas.width = 1024;
+var score1 = document.getElementsByClassName('player1')[0];
+var score2 = document.getElementsByClassName('player2')[0];
 
 var drawBoard = function() {
 	context.fillStyle = 'yellow';
@@ -71,8 +73,16 @@ var checkCollision = function(puck, paddles) {
 			puck.vy = - puck.vy;
 			return;
 		}
-		else if (puck.x < 0 || puck.x > canvas.width) {
-			puck.vx = - puck.vx;
+		else if (puck.x < 0) {
+			score1.textContent = +score1.textContent + 1;
+			window.puck = makePuck(canvas.width/2, canvas.height/2);
+			startPuck(window.puck, Math.random() * 1 > 0.5 ? 5: -5, 0);
+			return;
+		}
+		else if (puck.x > canvas.width) {
+			score2.textContent = +score2.textContent + 1;
+			window.puck = makePuck(canvas.width/2, canvas.height/2);
+			startPuck(window.puck, Math.random() * 1 > 0.5 ? 5: -5, 0);
 			return;
 		}
 	}
