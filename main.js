@@ -66,7 +66,7 @@ var checkCollision = function(puck, paddles) {
 		if (puck.x > current.x && puck.x < current.x + 10 && puck.y > current.y && puck.y < current.y + current.height) {
 			var yDiff = (puck.y - current.y - current.height / 2) / 100;
 			puck.vx = - puck.vx;
-			puck.vy = - puck.vy + yDiff;
+			// puck.vy = - puck.vy + yDiff;
 			return;
 		}
 		else if (puck.y < 0 || puck.y > canvas.height) {
@@ -75,14 +75,12 @@ var checkCollision = function(puck, paddles) {
 		}
 		else if (puck.x < 0) {
 			score1.textContent = +score1.textContent + 1;
-			window.puck = makePuck(canvas.width/2, canvas.height/2);
-			startPuck(window.puck, Math.random() * 1 > 0.5 ? 5: -5, 0);
+			reset();
 			return;
 		}
 		else if (puck.x > canvas.width) {
 			score2.textContent = +score2.textContent + 1;
-			window.puck = makePuck(canvas.width/2, canvas.height/2);
-			startPuck(window.puck, Math.random() * 1 > 0.5 ? 5: -5, 0);
+			reset();
 			return;
 		}
 	}
@@ -94,14 +92,18 @@ var updatePuck = function(puck) {
 	puck.y += puck.vy;
 };
 
+function reset() {
+	window.puck = makePuck(canvas.width/2, canvas.height/2);
+	startPuck(window.puck, Math.random() * 1 > 0.49 ? 5: -5, ~~(Math.random() * 15));
+}
+
 var init = function() {
 	paddles.push(makePaddle(0));
 	paddles.push(makePaddle(canvas.width - 10));
-	puck = makePuck(canvas.width/2, canvas.height/2);
 	var paddleHeight = paddles[0].height;
 	movePaddle(paddles[0], paddles[0].y - paddleHeight / 2);
 	movePaddle(paddles[1], paddles[1].y - paddleHeight / 2);
-	startPuck(puck, Math.random() * 1 > 0.5 ? 5: -5, 0);
+	reset();
 	setInterval(main, 14);
 };
 
