@@ -14,6 +14,11 @@ var Puck = function(x, y, vx, vy) {
 	this.vy = vy;
 };
 
+var Player = function(number) {
+	this.number = number;
+	this.ready = false;
+};
+
 var GameState = function(puck, paddles, players) {
 	this.puck = puck;
 	this.paddles = paddles;

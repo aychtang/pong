@@ -13,6 +13,7 @@ var gameLoop;
 var endGame = function(player) {
 	clearInterval(gameLoop);
 	console.log('player ' + player + ' has won the game');
+	game.style.display = 'none';
 };
 
 var drawBoard = function() {
@@ -101,6 +102,8 @@ var renderGame = function() {
 
 var init = function() {
 	game.style.display = 'block';
+	score1.textContent = 0;
+	score2.textContent = 0;
 	gameState = makeGameState(centerHeight, centerWidth, canvas.height / 5);
 	gameLoop = setInterval(renderGame, 14);
 };
