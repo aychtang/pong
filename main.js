@@ -64,12 +64,12 @@ var checkCollision = function(puck, paddles) {
 			return;
 		}
 		else if (puck.x < 0) {
-			score1.textContent = +score2.textContent + 1;
+			score2.textContent = +score2.textContent + 1;
 			reset(window.gameState);
 			return;
 		}
 		else if (puck.x > canvas.width) {
-			score2.textContent = +score1.textContent + 1;
+			score1.textContent = +score1.textContent + 1;
 			reset(window.gameState);
 			return;
 		}
@@ -100,6 +100,7 @@ var renderGame = function() {
 };
 
 var init = function() {
+	game.style.display = 'block';
 	gameState = makeGameState(centerHeight, centerWidth, canvas.height / 5);
 	gameLoop = setInterval(renderGame, 14);
 };
@@ -107,5 +108,3 @@ var init = function() {
 canvas.addEventListener('mousemove', function(e) {
 	movePaddle(player, e.y);
 });
-
-init();

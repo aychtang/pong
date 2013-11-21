@@ -2,13 +2,22 @@
 <html>
     <head>
         <title>Pong</title>
+        <style>
+            .game {
+                display: none;
+            }
+        </style>
     </head>
     <body>
-    		<div>
-    			<div class="player1">0</div>
-    			<div class="player2">0</div>
-    		</div>
-        <canvas id="pong"></canvas>
+        <section class="menu">
+            <button class="start-game">Click here to start game.</button>
+        </section>
+        <section class="game">
+    		<div class="player1">0</div>
+    		<div class="player2">0</div>
+            <canvas id="pong"></canvas>
+        </section>
+        <script src="index.js"></script>
         <script src="models.js"></script>
         <script src="main.js"></script>
     </body>
