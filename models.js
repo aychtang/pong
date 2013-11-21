@@ -1,6 +1,5 @@
 // Game Model definitions and makeGameState helper fn.
 
-
 var Paddle = function(x, y, height, width) {
 		this.x = x;
 		this.y = y;
@@ -20,12 +19,16 @@ var GameState = function(puck, paddles) {
 	this.paddles = paddles;
 };
 
+var makePuck = function(x, y) {
+	return new Puck(x, y, Math.random() * 1 > 0.49 ? 5: -5 , 10)
+};
+
 var makeGameState = function(centerHeight, centerWidth, paddleHeight) {
 	var paddleStartY = centerHeight - paddleHeight / 2;
 	var paddles = [
 		new Paddle(0, paddleStartY, paddleHeight, 10),
 		new Paddle(canvas.width - 10, paddleStartY, paddleHeight, 10)
 	];
-	var puck = new Puck(centerWidth, centerHeight, Math.random() * 1 > 0.49 ? 5: -5 , 10);
+	var puck = makePuck(centerWidth, centerHeight);
 	return new GameState(puck, paddles);
 };

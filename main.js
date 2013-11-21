@@ -79,7 +79,7 @@ var updatePuck = function(puck, paddles) {
 };
 
 function reset(gameState) {
-	gameState.puck = new Puck(centerWidth, centerHeight, Math.random() * 1 > 0.49 ? 5: -5 , 10);
+	gameState.puck = makePuck(centerWidth, centerHeight);
 }
 
 var renderGame = function() {
