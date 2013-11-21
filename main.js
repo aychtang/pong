@@ -14,6 +14,7 @@ var endGame = function(player) {
 	clearInterval(gameLoop);
 	console.log('player ' + player + ' has won the game');
 	game.style.display = 'none';
+	startButton.style.display = 'block';
 };
 
 var drawBoard = function() {
