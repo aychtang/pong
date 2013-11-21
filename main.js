@@ -8,6 +8,12 @@ var centerWidth = canvas.width / 2;
 var score1 = document.getElementsByClassName('player1')[0];
 var score2 = document.getElementsByClassName('player2')[0];
 var gameState;
+var gameLoop;
+
+var endGame = function(player) {
+	clearInterval(gameLoop);
+	console.log('player ' + player + ' has won the game');
+};
 
 var drawBoard = function() {
 	context.fillStyle = 'yellow';
@@ -58,12 +64,12 @@ var checkCollision = function(puck, paddles) {
 			return;
 		}
 		else if (puck.x < 0) {
-			score1.textContent = +score1.textContent + 1;
+			score1.textContent = +score2.textContent + 1;
 			reset(window.gameState);
 			return;
 		}
 		else if (puck.x > canvas.width) {
-			score2.textContent = +score2.textContent + 1;
+			score2.textContent = +score1.textContent + 1;
 			reset(window.gameState);
 			return;
 		}
@@ -86,11 +92,16 @@ var renderGame = function() {
 	var paddles = gameState.paddles;
 	var puck = gameState.puck;
 	main(puck, paddles);
+	var p1Win = +score1.textContent >= 3;
+	var p2Win = +score2.textContent >= 3
+	if (p1Win|| p2Win) {
+		endGame(p1Win ? 1 : 2);
+	}
 };
 
 var init = function() {
 	gameState = makeGameState(centerHeight, centerWidth, canvas.height / 5);
-	setInterval(renderGame, 14);
+	gameLoop = setInterval(renderGame, 14);
 };
 
 canvas.addEventListener('mousemove', function(e) {
