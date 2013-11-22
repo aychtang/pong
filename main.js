@@ -1,6 +1,6 @@
 var canvas = document.getElementById('pong');
 var context = canvas.getContext('2d');
-var player = 1;
+var player = 0;
 canvas.height = 500;
 canvas.width = 1024;
 var centerHeight = canvas.height / 2;
@@ -18,14 +18,13 @@ var endGame = function(player) {
 };
 
 var drawBoard = function() {
-	context.fillStyle = 'yellow';
+	context.fillStyle = 'turquoise';
 	context.fillRect(0, 0, canvas.width, canvas.height);
 };
 
-var main = function(puck, paddles) {
+var render = function(puck, paddles) {
 	drawBoard();
 	drawPaddles(paddles);
-	updatePuck(puck, paddles);
 	drawPuck(puck);
 };
 
@@ -56,25 +55,30 @@ var movePaddle = function(player, y) {
 var checkCollision = function(puck, paddles) {
 	for (var i = 0; i < paddles.length; i++) {
 		var current = paddles[i];
-		if (puck.x > current.x && puck.x < current.x + 10 && puck.y > current.y && puck.y < current.y + current.height) {
-			var yDiff = (puck.y - current.y - current.height / 2) / 100;
+		var wallCollision = puck.y < 0 || puck.y > canvas.height;
+		var playerOneConcede = puck.x < 0;
+		var playerTwoConcede = puck.x > canvas.width;
+		var paddleCollision = puck.x > current.x && puck.x < current.x + 10 && puck.y > current.y && puck.y < current.y + current.height;
+
+		if (paddleCollision) {
 			puck.vx = - puck.vx;
 			return;
 		}
-		else if (puck.y < 0 || puck.y > canvas.height) {
+		else if (wallCollision) {
 			puck.vy = - puck.vy;
 			return;
 		}
-		else if (puck.x < 0) {
+		else if (playerOneConcede) {
 			score2.textContent = +score2.textContent + 1;
 			reset(window.gameState);
 			return;
 		}
-		else if (puck.x > canvas.width) {
+		else if (playerTwoConcede) {
 			score1.textContent = +score1.textContent + 1;
 			reset(window.gameState);
 			return;
 		}
+
 	}
 };
 
@@ -90,15 +94,20 @@ function reset(gameState) {
 	gameState.puck = makePuck(centerWidth, centerHeight);
 }
 
-var renderGame = function() {
-	var paddles = gameState.paddles;
-	var puck = gameState.puck;
-	main(puck, paddles);
-	var p1Win = +score1.textContent >= 3;
-	var p2Win = +score2.textContent >= 3
-	if (p1Win|| p2Win) {
+var checkWin = function(score1, score2) {
+	var p1Win = score1 >= 3;
+	var p2Win = score2 >= 3;
+	if (p1Win || p2Win) {
 		endGame(p1Win ? 1 : 2);
 	}
+};
+
+var main = function() {
+	var paddles = gameState.paddles;
+	var puck = gameState.puck;
+	updatePuck(puck, paddles);
+	checkWin(+score1.textContent, +score2.textContent);
+	render(puck, paddles);
 };
 
 var init = function() {
@@ -106,7 +115,7 @@ var init = function() {
 	score1.textContent = 0;
 	score2.textContent = 0;
 	gameState = makeGameState(centerHeight, centerWidth, canvas.height / 5);
-	gameLoop = setInterval(renderGame, 14);
+	gameLoop = setInterval(main, 14);
 };
 
 canvas.addEventListener('mousemove', function(e) {
