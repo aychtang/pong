@@ -1,11 +1,12 @@
 
-var Game = function(gameEl, canvas, player, scoreEls) {
+var Game = function(gameEl, canvas, player, scoreEls, eventSystem) {
 	this.gameEl = gameEl;
 	this.canvas = canvas;
 	this.player = player;
 	this.score1 = scoreEls[0];
 	this.score2 = scoreEls[1];
 	this.context = canvas.getContext('2d');
+	this.events = eventSystem;
 
 	this.gameState = undefined;
 	this.gameLoop = undefined;
@@ -22,7 +23,7 @@ Game.prototype.end = function(player) {
 	clearInterval(this.gameLoop);
 	console.log('player ' + player + ' has won the game');
 	this.gameEl.style.display = 'none';
-	manager.endGame();
+	this.events.trigger('end');
 };
 
 Game.prototype.drawBoard = function() {
