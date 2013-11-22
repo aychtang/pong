@@ -1,37 +1,45 @@
-//TODO: modularise game code.
 
-var canvas = document.getElementById('pong');
-var context = canvas.getContext('2d');
-var player = 0;
-canvas.height = 500, canvas.width = 1024;
-var centerHeight = canvas.height / 2;
-var centerWidth = canvas.width / 2;
-var score1 = document.getElementsByClassName('player1')[0];
-var score2 = document.getElementsByClassName('player2')[0];
-var gameState, gameLoop;
+var Game = function(gameEl, canvas, player, scoreEls) {
+	this.gameEl = gameEl;
+	this.canvas = canvas;
+	this.player = player;
+	this.score1 = scoreEls[0];
+	this.score2 = scoreEls[1];
+	this.context = canvas.getContext('2d');
 
-var endGame = function(player) {
-	clearInterval(gameLoop);
+	this.gameState = undefined;
+	this.gameLoop = undefined;
+};
+
+Game.prototype.init = function() {
+	this.canvas.height = 500;
+	this.canvas.width = 1024;
+	this.centerHeight = this.canvas.height / 2;
+	this.centerWidth = this.canvas.width / 2;
+};
+
+Game.prototype.end = function(player) {
+	clearInterval(this.gameLoop);
 	console.log('player ' + player + ' has won the game');
-	game.style.display = 'none';
+	this.gameEl.style.display = 'none';
 	startButton.style.display = 'block';
 };
 
-var drawBoard = function() {
-	context.fillStyle = 'turquoise';
-	context.fillRect(0, 0, canvas.width, canvas.height);
+Game.prototype.drawBoard = function() {
+	this.context.fillStyle = 'turquoise';
+	this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 };
 
-var render = function(puck, paddles) {
-	drawBoard();
-	drawPaddles(paddles);
-	drawPuck(puck);
+Game.prototype.render = function(puck, paddles) {
+	this.drawBoard();
+	this.drawPaddles(paddles);
+	this.draw(puck, 'black');
 };
 
 // Works as long as obj has x, y, width, height props.
-var draw = function(obj, color) {
-	context.fillStyle = color;
-	context.fillRect(
+Game.prototype.draw = function(obj, color) {
+	this.context.fillStyle = color;
+	this.context.fillRect(
 		obj.x,
 		obj.y,
 		obj.width,
@@ -39,35 +47,31 @@ var draw = function(obj, color) {
 	);
 };
 
-var drawPaddles = function(paddles) {
+Game.prototype.drawPaddles = function(paddles) {
 	for (var i = 0; i < paddles.length; i++) {
 		var current = paddles[i];
-		draw(current, 'black');
+		this.draw(current, 'black');
 	}
 };
 
-var drawPuck = function(puck) {
-	draw(puck, 'black');
-};
-
-var movePaddle = function(player, y) {
-	var paddle = gameState.paddles[player];
-	if (y >= 0 && y <= canvas.height - paddle.get('height')) {
+Game.prototype.movePaddle = function(player, y) {
+	var paddle = this.gameState.paddles[player];
+	if (y >= 0 && y <= this.canvas.height - paddle.get('height')) {
 		paddle.y = y;
 	}
 };
 
-var reset = function(gameState) {
-	gameState.puck = makePuck(centerWidth, centerHeight);
+Game.prototype.reset = function(gameState) {
+	gameState.puck = makePuck(this.centerWidth, this.centerHeight);
 };
 
 
-var checkCollision = function(puck, paddles) {
+Game.prototype.checkCollision = function(puck, paddles) {
 	for (var i = 0; i < paddles.length; i++) {
 		var current = paddles[i];
-		var wallCollision = puck.y < 0 || puck.y > canvas.height;
+		var wallCollision = puck.y < 0 || puck.y > this.canvas.height;
 		var playerOneConcede = puck.x < 0;
-		var playerTwoConcede = puck.x > canvas.width;
+		var playerTwoConcede = puck.x > this.canvas.width;
 		var paddleCollision = puck.x > current.x && puck.x < current.x + 10 && puck.y > current.y && puck.y < current.y + current.height;
 
 		if (paddleCollision) {
@@ -79,46 +83,52 @@ var checkCollision = function(puck, paddles) {
 			return;
 		}
 		else if (playerOneConcede) {
-			reset(window.gameState);
-			score2.textContent = +score2.textContent + 1;
+			this.reset(this.gameState);
+			this.score2.textContent = +this.score2.textContent + 1;
 			return;
 		}
 		else if (playerTwoConcede) {
-			reset(window.gameState);
-			score1.textContent = +score1.textContent + 1;
+			this.reset(this.gameState);
+			this.score1.textContent = +this.score1.textContent + 1;
 			return;
 		}
 	}
 };
 
-var updatePuck = function(puck, paddles) {
-	checkCollision(puck, paddles);
+Game.prototype.updatePuck = function(puck, paddles) {
+	this.checkCollision(puck, paddles);
 	puck.x += puck.vx;
 	puck.y += puck.vy;
 };
 
-var checkWin = function(score1, score2) {
+Game.prototype.checkWin = function(score1, score2) {
 	var p1Win = score1 >= 3;
 	var p2Win = score2 >= 3;
 	if (p1Win || p2Win) {
-		endGame(p1Win ? 1 : 2);
+		this.end(p1Win ? 1 : 2);
 	}
 };
 
-var main = function() {
-	var paddles = gameState.paddles;
-	var puck = gameState.puck;
-	updatePuck(puck, paddles);
-	checkWin(+score1.textContent, +score2.textContent);
-	render(puck, paddles);
+Game.prototype.main = function() {
+	var paddles = this.gameState.paddles;
+	var puck = this.gameState.puck;
+	this.updatePuck(puck, paddles);
+	this.checkWin(+this.score1.textContent, +this.score2.textContent);
+	this.render(puck, paddles);
 };
 
-var init = function() {
-	game.style.display = 'block';
-	gameState = makeGameState(centerHeight, centerWidth, canvas.height / 5);
-	gameLoop = setInterval(main, 14);
+Game.prototype.start = function() {
+	this.init();
+	this.gameEl.style.display = 'block';
+	this.score1.textContent = 0;
+	this.score2.textContent = 0;
+	this.gameState = makeGameState(this.centerHeight, this.centerWidth, this.canvas.height / 5, this.canvas);
+	this.gameLoop = setInterval(this.main.bind(this), 14);
+	this.setMouseListener(this.player);
 };
 
-canvas.addEventListener('mousemove', function(e) {
-	movePaddle(player, e.y - canvas.offsetTop);
-});
+Game.prototype.setMouseListener = function(player) {
+	this.canvas.addEventListener('mousemove', function(e) {
+		this.movePaddle(player, e.y - this.canvas.offsetTop);
+	}.bind(this));
+};
