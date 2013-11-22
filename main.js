@@ -1,114 +1,124 @@
+//TODO: modularise game code.
+
 var canvas = document.getElementById('pong');
 var context = canvas.getContext('2d');
-var paddles = [];
-var player = 1;
-var puck;
-canvas.height = 500;
-canvas.width = 1024;
+var player = 0;
+canvas.height = 500, canvas.width = 1024;
+var centerHeight = canvas.height / 2;
+var centerWidth = canvas.width / 2;
 var score1 = document.getElementsByClassName('player1')[0];
 var score2 = document.getElementsByClassName('player2')[0];
+var gameState, gameLoop;
+
+var endGame = function(player) {
+	clearInterval(gameLoop);
+	console.log('player ' + player + ' has won the game');
+	game.style.display = 'none';
+	startButton.style.display = 'block';
+};
 
 var drawBoard = function() {
-	context.fillStyle = 'yellow';
+	context.fillStyle = 'turquoise';
 	context.fillRect(0, 0, canvas.width, canvas.height);
 };
 
-var makePaddle = function(x) {
-	return {
-		x: x,
-		y: canvas.height / 2,
-		height: canvas.height / 5,
-		width: 10
-	};
-};
-
-var makePuck = function(x, y) {
-	return {
-		x: x,
-		y: y,
-		vx: 0,
-		vy: 0
-	};
-};
-
-var main = function() {
+var render = function(puck, paddles) {
 	drawBoard();
-	drawPaddles(paddles, context);
-	updatePuck(puck);
+	drawPaddles(paddles);
 	drawPuck(puck);
 };
 
-var drawPaddles = function(paddles, context) {
-	context.fillStyle = 'black';
+// Works as long as obj has x, y, width, height props.
+var draw = function(obj, color) {
+	context.fillStyle = color;
+	context.fillRect(
+		obj.x,
+		obj.y,
+		obj.width,
+		obj.height
+	);
+};
+
+var drawPaddles = function(paddles) {
 	for (var i = 0; i < paddles.length; i++) {
 		var current = paddles[i];
-		context.fillRect(current.x, current.y, current.width, current.height);
+		draw(current, 'black');
 	}
 };
 
 var drawPuck = function(puck) {
-	context.fillStyle = 'black';
-	context.fillRect(puck.x, puck.y, 10, 10);
+	draw(puck, 'black');
 };
 
-var startPuck = function(puck, vx, vy) {
-	puck.vx = vx;
-	puck.vy = vy;
+var movePaddle = function(player, y) {
+	var paddle = gameState.paddles[player];
+	if (y >= 0 && y <= canvas.height - paddle.get('height')) {
+		paddle.y = y;
+	}
 };
 
-var movePaddle = function(paddle, y) {
-	paddle.y = y;
+var reset = function(gameState) {
+	gameState.puck = makePuck(centerWidth, centerHeight);
 };
+
 
 var checkCollision = function(puck, paddles) {
 	for (var i = 0; i < paddles.length; i++) {
 		var current = paddles[i];
-		if (puck.x > current.x && puck.x < current.x + 10 && puck.y > current.y && puck.y < current.y + current.height) {
-			var yDiff = (puck.y - current.y - current.height / 2) / 100;
-			puck.vx = - puck.vx;
-			// puck.vy = - puck.vy + yDiff;
+		var wallCollision = puck.y < 0 || puck.y > canvas.height;
+		var playerOneConcede = puck.x < 0;
+		var playerTwoConcede = puck.x > canvas.width;
+		var paddleCollision = puck.x > current.x && puck.x < current.x + 10 && puck.y > current.y && puck.y < current.y + current.height;
+
+		if (paddleCollision) {
+			puck.set('vx', -puck.vx);
 			return;
 		}
-		else if (puck.y < 0 || puck.y > canvas.height) {
-			puck.vy = - puck.vy;
+		else if (wallCollision) {
+			puck.set('vy', -puck.vy);
 			return;
 		}
-		else if (puck.x < 0) {
-			score1.textContent = +score1.textContent + 1;
-			reset();
-			return;
-		}
-		else if (puck.x > canvas.width) {
+		else if (playerOneConcede) {
+			reset(window.gameState);
 			score2.textContent = +score2.textContent + 1;
-			reset();
+			return;
+		}
+		else if (playerTwoConcede) {
+			reset(window.gameState);
+			score1.textContent = +score1.textContent + 1;
 			return;
 		}
 	}
 };
 
-var updatePuck = function(puck) {
+var updatePuck = function(puck, paddles) {
 	checkCollision(puck, paddles);
 	puck.x += puck.vx;
 	puck.y += puck.vy;
 };
 
-function reset() {
-	window.puck = makePuck(canvas.width/2, canvas.height/2);
-	startPuck(window.puck, Math.random() * 1 > 0.49 ? 5: -5, ~~(Math.random() * 15));
-}
+var checkWin = function(score1, score2) {
+	var p1Win = score1 >= 3;
+	var p2Win = score2 >= 3;
+	if (p1Win || p2Win) {
+		endGame(p1Win ? 1 : 2);
+	}
+};
+
+var main = function() {
+	var paddles = gameState.paddles;
+	var puck = gameState.puck;
+	updatePuck(puck, paddles);
+	checkWin(+score1.textContent, +score2.textContent);
+	render(puck, paddles);
+};
 
 var init = function() {
-	paddles.push(makePaddle(0));
-	paddles.push(makePaddle(canvas.width - 10));
-	var paddleHeight = paddles[0].height;
-	movePaddle(paddles[0], paddles[0].y - paddleHeight / 2);
-	movePaddle(paddles[1], paddles[1].y - paddleHeight / 2);
-	reset();
-	setInterval(main, 14);
+	game.style.display = 'block';
+	gameState = makeGameState(centerHeight, centerWidth, canvas.height / 5);
+	gameLoop = setInterval(main, 14);
 };
 
 canvas.addEventListener('mousemove', function(e) {
-	movePaddle(paddles[player], e.y);
+	movePaddle(player, e.y - canvas.offsetTop);
 });
-
-init();

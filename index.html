@@ -2,13 +2,34 @@
 <html>
     <head>
         <title>Pong</title>
+        <style>
+            body {
+                background: black;
+                color: white;
+            }
+            .game {
+                display: none;
+            }
+            #pong {
+                position: absolute;
+                margin-left: -512px;
+                margin-top: -250px;
+                left: 50%;
+                top: 50%;
+            }
+        </style>
     </head>
     <body>
-    		<div>
-    			<div class="player1">0</div>
-    			<div class="player2">0</div>
-    		</div>
-        <canvas id="pong"></canvas>
+        <section class="menu">
+            <button class="start-game">Click here to start game.</button>
+        </section>
+        <section class="game">
+            <div>Player 1: <span class="player1">0</span></div>
+            <div>Player 2: <span class="player2">0</span></div>
+            <canvas id="pong"></canvas>
+        </section>
+        <script src="index.js"></script>
+        <script src="models.js"></script>
         <script src="main.js"></script>
     </body>
 </html>
