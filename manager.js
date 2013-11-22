@@ -1,5 +1,11 @@
-var Manager = function() {
+var Manager = function(eventSystem) {
 	this.currentGame = null;
+	this.events = eventSystem;
+	this.serListeners();
+};
+
+Manager.prototype.serListeners = function() {
+	this.events.on('start', this.playGame.bind(this));
 };
 
 Manager.prototype.playGame = function() {
@@ -10,10 +16,10 @@ Manager.prototype.playGame = function() {
 		document.getElementsByClassName('player2')[0]
 	]);
 	this.currentGame.start();
-	gameUI.hide();
+	this.events.trigger('hideUI');
 };
 
 Manager.prototype.endGame = function() {
 	this.currentGame = null;
-	gameUI.show();
+	this.events.trigger('showUI');
 };
