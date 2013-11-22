@@ -22,7 +22,7 @@ Game.prototype.end = function(player) {
 	clearInterval(this.gameLoop);
 	console.log('player ' + player + ' has won the game');
 	this.gameEl.style.display = 'none';
-	startButton.style.display = 'block';
+	manager.endGame();
 };
 
 Game.prototype.drawBoard = function() {
@@ -64,7 +64,6 @@ Game.prototype.movePaddle = function(player, y) {
 Game.prototype.reset = function(gameState) {
 	gameState.puck = makePuck(this.centerWidth, this.centerHeight);
 };
-
 
 Game.prototype.checkCollision = function(puck, paddles) {
 	for (var i = 0; i < paddles.length; i++) {
