@@ -1,14 +1,14 @@
+//TODO: modularise game code.
+
 var canvas = document.getElementById('pong');
 var context = canvas.getContext('2d');
 var player = 0;
-canvas.height = 500;
-canvas.width = 1024;
+canvas.height = 500, canvas.width = 1024;
 var centerHeight = canvas.height / 2;
 var centerWidth = canvas.width / 2;
 var score1 = document.getElementsByClassName('player1')[0];
 var score2 = document.getElementsByClassName('player2')[0];
-var gameState;
-var gameLoop;
+var gameState, gameLoop;
 
 var endGame = function(player) {
 	clearInterval(gameLoop);
@@ -28,29 +28,39 @@ var render = function(puck, paddles) {
 	drawPuck(puck);
 };
 
+// Works as long as obj has x, y, width, height props.
+var draw = function(obj, color) {
+	context.fillStyle = color;
+	context.fillRect(
+		obj.x,
+		obj.y,
+		obj.width,
+		obj.height
+	);
+};
+
 var drawPaddles = function(paddles) {
-	context.fillStyle = 'black';
 	for (var i = 0; i < paddles.length; i++) {
 		var current = paddles[i];
-		context.fillRect(current.x, current.y, current.width, current.height);
+		draw(current, 'black');
 	}
 };
 
 var drawPuck = function(puck) {
-	context.fillStyle = 'black';
-	context.fillRect(puck.x, puck.y, 10, 10);
-};
-
-var startPuck = function(puck, vx, vy) {
-	puck.vx = vx;
-	puck.vy = vy;
+	draw(puck, 'black');
 };
 
 var movePaddle = function(player, y) {
-	if (gameState) {
-		gameState.paddles[player].y = y;
+	var paddle = gameState.paddles[player];
+	if (y >= 0 && y <= canvas.height - paddle.get('height')) {
+		paddle.y = y;
 	}
 };
+
+var reset = function(gameState) {
+	gameState.puck = makePuck(centerWidth, centerHeight);
+};
+
 
 var checkCollision = function(puck, paddles) {
 	for (var i = 0; i < paddles.length; i++) {
@@ -61,38 +71,31 @@ var checkCollision = function(puck, paddles) {
 		var paddleCollision = puck.x > current.x && puck.x < current.x + 10 && puck.y > current.y && puck.y < current.y + current.height;
 
 		if (paddleCollision) {
-			puck.vx = - puck.vx;
+			puck.set('vx', -puck.vx);
 			return;
 		}
 		else if (wallCollision) {
-			puck.vy = - puck.vy;
+			puck.set('vy', -puck.vy);
 			return;
 		}
 		else if (playerOneConcede) {
-			score2.textContent = +score2.textContent + 1;
 			reset(window.gameState);
+			score2.textContent = +score2.textContent + 1;
 			return;
 		}
 		else if (playerTwoConcede) {
-			score1.textContent = +score1.textContent + 1;
 			reset(window.gameState);
+			score1.textContent = +score1.textContent + 1;
 			return;
 		}
-
 	}
 };
 
 var updatePuck = function(puck, paddles) {
-	if (puck != undefined) {
-		checkCollision(puck, paddles);
-		puck.x += puck.vx;
-		puck.y += puck.vy;
-	}
+	checkCollision(puck, paddles);
+	puck.x += puck.vx;
+	puck.y += puck.vy;
 };
-
-function reset(gameState) {
-	gameState.puck = makePuck(centerWidth, centerHeight);
-}
 
 var checkWin = function(score1, score2) {
 	var p1Win = score1 >= 3;
@@ -112,12 +115,10 @@ var main = function() {
 
 var init = function() {
 	game.style.display = 'block';
-	score1.textContent = 0;
-	score2.textContent = 0;
 	gameState = makeGameState(centerHeight, centerWidth, canvas.height / 5);
 	gameLoop = setInterval(main, 14);
 };
 
 canvas.addEventListener('mousemove', function(e) {
-	movePaddle(player, e.y);
+	movePaddle(player, e.y - canvas.offsetTop);
 });
