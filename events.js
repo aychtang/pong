@@ -3,7 +3,6 @@ var Events = function() {
 };
 
 Events.prototype.on = function(ev, callback) {
-	debugger;
 	if (!this.callbacksByEvent[ev]) {
 		this.callbacksByEvent[ev] = [];
 	}
