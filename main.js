@@ -1,4 +1,3 @@
-
 var Game = function(gameEl, canvas, player, scoreEls, eventSystem) {
 	this.gameEl = gameEl;
 	this.canvas = canvas;
@@ -27,7 +26,7 @@ Game.prototype.end = function(player) {
 };
 
 Game.prototype.drawBoard = function() {
-	this.context.fillStyle = 'turquoise';
+	this.context.fillStyle = 'pink';
 	this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 };
 

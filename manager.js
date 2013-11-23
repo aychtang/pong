@@ -1,24 +1,29 @@
 var Manager = function(eventSystem) {
 	this.currentGame = null;
 	this.events = eventSystem;
-	this.serListeners();
+	this.setListeners();
 };
 
-Manager.prototype.serListeners = function() {
+Manager.prototype.setListeners = function() {
 	this.events.on('start', this.playGame.bind(this));
 	this.events.on('end', this.endGame.bind(this));
 };
 
-Manager.prototype.playGame = function() {
-	this.currentGame = new Game(
+Manager.prototype.makeGame = function() {
+	return new Game(
 		document.querySelector('.game'),
-		document.getElementById('pong'), 1,
+		document.getElementById('pong'),
+		1,
 		[
-			document.getElementsByClassName('player1')[0],
-			document.getElementsByClassName('player2')[0],
+			document.querySelector('.player1'),
+			document.querySelector('.player2')
 		],
 		this.events
-);
+	);
+};
+
+Manager.prototype.playGame = function() {
+	this.currentGame = this.makeGame();
 	this.currentGame.start();
 	this.events.trigger('hideUI');
 };

@@ -3,10 +3,10 @@ var UI = function(el, startButton, eventSystem) {
 	this.startButton = startButton;
 	this.events = eventSystem;
 	this.open = true;
-	this.setListener();
+	this.setListeners();
 };
 
-UI.prototype.setListener = function() {
+UI.prototype.setListeners = function() {
 	this.events.on('showUI', this.show.bind(this));
 	this.events.on('hideUI', this.hide.bind(this));
 	this.startButton.addEventListener('click', function() {

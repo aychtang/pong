@@ -1,4 +1,3 @@
-// Game Model definitions and helper fns for creation.
 Object.prototype.get = function(prop) {
 	if (this.hasOwnProperty(prop)) {
 		return this[prop];
