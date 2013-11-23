@@ -6,6 +6,7 @@ var Game = function(gameEl, canvas, player, scoreEls, eventSystem) {
 	this.score2 = scoreEls[1];
 	this.context = canvas.getContext('2d');
 	this.events = eventSystem;
+	this.scores = [0, 0];
 
 	this.gameState = undefined;
 	this.gameLoop = undefined;
@@ -83,12 +84,14 @@ Game.prototype.checkCollision = function(puck, paddles) {
 		}
 		else if (playerOneConcede) {
 			this.reset(this.gameState);
-			this.score2.textContent = +this.score2.textContent + 1;
+			this.scores[1]++;
+			this.score2.textContent = this.scores[1];
 			return;
 		}
 		else if (playerTwoConcede) {
 			this.reset(this.gameState);
-			this.score1.textContent = +this.score1.textContent + 1;
+			this.scores[0]++;
+			this.score1.textContent = this.scores[0];
 			return;
 		}
 	}
@@ -100,9 +103,9 @@ Game.prototype.updatePuck = function(puck, paddles) {
 	puck.y += puck.vy;
 };
 
-Game.prototype.checkWin = function(score1, score2) {
-	var p1Win = score1 >= 3;
-	var p2Win = score2 >= 3;
+Game.prototype.checkWin = function(scores) {
+	var p1Win = scores[0] >= 3;
+	var p2Win = scores[1] >= 3;
 	if (p1Win || p2Win) {
 		this.end(p1Win ? 1 : 2);
 	}
@@ -112,13 +115,15 @@ Game.prototype.main = function() {
 	var paddles = this.gameState.paddles;
 	var puck = this.gameState.puck;
 	this.updatePuck(puck, paddles);
-	this.checkWin(+this.score1.textContent, +this.score2.textContent);
+	this.checkWin(this.scores);
 	this.render(puck, paddles);
 };
 
 Game.prototype.start = function() {
 	this.init();
 	this.gameEl.style.display = 'block';
+	this.scores[0] = 0;
+	this.scores[1] = 0;
 	this.score1.textContent = 0;
 	this.score2.textContent = 0;
 	this.gameState = makeGameState(this.centerHeight, this.centerWidth, this.canvas.height / 5, this.canvas);
