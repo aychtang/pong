@@ -2,37 +2,42 @@
 <html>
     <head>
         <title>Pong</title>
-        <style>
-            body {
-                background: black;
-                color: white;
-            }
-            .game {
-                display: none;
-            }
-            #pong {
-                position: absolute;
-                margin-left: -512px;
-                margin-top: -250px;
-                left: 50%;
-                top: 50%;
-            }
-        </style>
+        <link rel="stylesheet" type="text/css" href="style.css">
     </head>
     <body>
+
         <section class="menu">
-            <button class="start-game">Click here to start game.</button>
+            <h1>Cloak-Pong</h1>
+            <section class="name">
+                <label>Username:</label>
+                <input type="text" class="username" placeholder="username"/>
+                <button class="submit-name">Go!</button>
+            </section>
+            <section class="main">
+                <button class="start-game">Click here to start game.</button>
+            </section>
         </section>
+
         <section class="game">
-            <div>Player 1: <span class="player1">0</span></div>
-            <div>Player 2: <span class="player2">0</span></div>
+            <div class="scores">
+                <div>Player 1: <span>0</span></div>
+                <div>Player 2: <span>0</span></div>
+            </div>
             <canvas id="pong"></canvas>
         </section>
+
+        <script src="lib/underscore-min.js"></script>
+        <script src="lib/socket.io.min.js"></script>
+        <script src="node_modules/cloak/cloak-client.js"></script>
+        <script src="node_modules/dombars/dist/dombars.js"></script>
+
+        <script src="client.js"></script>
         <script src="events.js"></script>
         <script src="manager.js"></script>
+        <script src="models.js"></script>
         <script src="ui.js"></script>
         <script src="main.js"></script>
         <script src="index.js"></script>
-        <script src="models.js"></script>
+
     </body>
 </html>
