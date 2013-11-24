@@ -1,14 +1,3 @@
-Object.prototype.get = function(prop) {
-	if (this.hasOwnProperty(prop)) {
-		return this[prop];
-	}
-};
-
-Object.prototype.set = function(prop, value) {
-	if (this.hasOwnProperty(prop)) {
-		this[prop] = value;
-	}
-};
 
 var Paddle = function(x, y, height, width) {
 	this.x = x;
